@@ -219,10 +219,19 @@ section{position:relative;padding:76px 0}
 .fab svg{width:20px;height:20px}
 .fab .off{display:none}.fab.muted .off{display:block}.fab.muted .on{display:none}
 
-.rv{transform:translateY(24px);transition:transform .9s cubic-bezier(.2,.8,.2,1)}
-.rv.in{transform:none}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}#petals{display:none}}
+.rv{opacity:0;transform:translateY(36px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.8,.2,1);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+.girl .ph.rv{transform:scale(1.06)}
+.girl .ph.rv.in{transform:none}
+.tl li.rv:nth-child(odd){transform:translateX(-34px)}
+.tl li.rv:nth-child(even){transform:translateX(34px)}
+.tl li.rv.in{transform:none}
+.rsvp .btn.wa{background:linear-gradient(135deg,var(--green-d),var(--pink-d));border-color:transparent;padding:17px 34px;box-shadow:0 12px 26px rgba(185,86,111,.28)}
+.rsvp .btn.wa:hover{color:#fff;transform:translateY(-3px);box-shadow:0 16px 30px rgba(185,86,111,.36)}
+.rsvp .btn svg{width:18px;height:18px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}#petals{display:none}.rv{opacity:1!important;transform:none!important}}
 </style>
+<noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body class="locked">
 
@@ -422,6 +431,21 @@ section{position:relative;padding:76px 0}
     </div>
   </section>
 
+  <!-- Confirmar asistencia -->
+  <section class="rsvp center">
+    <div class="pad rv">
+      <p class="eyebrow">Confirmación</p>
+      <h2 class="title">Confirma tu asistencia</h2>
+      <p style="max-width:30ch;margin:14px auto 0">Nos hará muy felices contar con tu presencia. Avísanos por WhatsApp.</p>
+      <div class="btns">
+        <a class="btn wa" href="https://wa.me/525539914197?text=Hola%2C%20confirmo%20mi%20asistencia%20a%20los%20XV%20a%C3%B1os%20de%20Valeria%20y%20Alexa%20el%2029%20de%20diciembre.%20Mi%20nombre%20es%3A%20" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.3-2-1-.8.8c-.8-.4-1.600-1.200-2-2l.8-.8-1-2z" fill="currentColor" stroke="none"/></svg>
+          Confirmar asistencia
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- Cierre -->
   <section class="final">
     <div class="pad">
@@ -463,7 +487,7 @@ section{position:relative;padding:76px 0}
   btn.addEventListener('click',function(){
     gate.classList.add('open');
     try{song.volume=.8;var p=song.play();if(p&&p.catch)p.catch(function(){});}catch(e){}
-    setTimeout(function(){gate.classList.add('gone');document.body.classList.remove('locked');},1900);
+    setTimeout(function(){gate.classList.add('gone');document.body.classList.remove('locked');startReveal();},1900);
   });
 
   // Calendario diciembre 2026 (domingo primero)
@@ -474,15 +498,29 @@ section{position:relative;padding:76px 0}
   for(var d=1;d<=31;d++)h+='<span'+(d===29?' class="me"':'')+'>'+d+'</span>';
   cal.innerHTML=h;
 
-  // Aparición y resaltado
-  var io=new IntersectionObserver(function(es){
-    es.forEach(function(e){
-      if(e.isIntersecting)e.target.classList.add('in');
-      if(e.target.tagName==='LI')e.target.classList.toggle('on',e.isIntersecting&&e.intersectionRatio>.7);
-    });
-  },{threshold:[0,.15,.7]});
-  document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
-  setTimeout(function(){document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in');});},2500);
+  // Animación "fade in up" al bajar el scroll
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  document.querySelectorAll('.pad.rv').forEach(function(w){
+    w.classList.remove('rv');
+    Array.prototype.forEach.call(w.children,function(c,i){c.classList.add('rv');c.style.setProperty('--d',(i*0.13)+'s');});
+  });
+  document.querySelectorAll('.hero-img,.count,.girl .ph').forEach(function(el){el.classList.add('rv');});
+  document.querySelectorAll('.hero-names > *').forEach(function(el,i){el.classList.add('rv');el.style.setProperty('--d',(0.15+i*0.15)+'s');});
+  document.querySelectorAll('.count div').forEach(function(el,i){el.classList.add('rv');el.style.setProperty('--d',(0.5+i*0.1)+'s');});
+  document.querySelectorAll('.final .pad > *').forEach(function(el,i){el.classList.add('rv');el.style.setProperty('--d',(i*0.15)+'s');});
+  var started=false;
+  function startReveal(){
+    if(started)return;started=true;
+    var all=document.querySelectorAll('.rv');
+    if(reduce||!('IntersectionObserver' in window)){all.forEach(function(el){el.classList.add('in');});return;}
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting)e.target.classList.add('in');
+        if(e.target.tagName==='LI')e.target.classList.toggle('on',e.isIntersecting&&e.intersectionRatio>.7);
+      });
+    },{threshold:[0,.15,.7],rootMargin:'0px 0px -8% 0px'});
+    all.forEach(function(el){io.observe(el);});
+  }
 
   // Cuenta regresiva: 29 dic 2026, 2:00 pm hora de México (UTC-6)
   var target=Date.UTC(2026,11,29,20,0,0);
