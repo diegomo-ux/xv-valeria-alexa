@@ -226,6 +226,17 @@ section{position:relative;padding:76px 0}
 .tl li.rv:nth-child(odd){transform:translateX(-34px)}
 .tl li.rv:nth-child(even){transform:translateX(34px)}
 .tl li.rv.in{transform:none}
+.gift{background:var(--pink-l)}
+.gift .msg{max-width:30ch;margin:16px auto 0;font-style:italic}
+.env-ico{width:150px;height:104px;margin:26px auto 0;display:block;filter:drop-shadow(0 10px 16px rgba(185,86,111,.18))}
+.gift h3.rain{font-family:var(--display);font-weight:600;font-size:1.15rem;letter-spacing:.1em;margin-top:22px}
+.gift .buz{margin-top:2px}
+.bank{max-width:340px;margin:44px auto 0;padding:26px 20px 22px;background:#fff;border-radius:10px;box-shadow:0 12px 30px rgba(185,86,111,.14);border-top:3px solid var(--pink)}
+.bank .lbl{font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;font-weight:700;color:var(--pink-d);padding-left:.4em}
+.bank .who{font-family:var(--display);font-weight:500;font-size:1.02rem;letter-spacing:.06em;line-height:1.5;margin-top:14px}
+.bank .num{font-family:var(--display);font-weight:600;font-size:1.3rem;letter-spacing:.1em;margin-top:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bank .bnk{margin-top:6px;font-size:.66rem;letter-spacing:.32em;text-transform:uppercase;font-weight:700;opacity:.65;padding-left:.32em}
+.bank .btn{margin-top:20px;padding:12px 24px;font-size:.6rem}
 .rsvp .btn.wa{background:linear-gradient(135deg,var(--green-d),var(--pink-d));border-color:transparent;padding:17px 34px;box-shadow:0 12px 26px rgba(185,86,111,.28)}
 .rsvp .btn.wa:hover{color:#fff;transform:translateY(-3px);box-shadow:0 16px 30px rgba(185,86,111,.36)}
 .rsvp .btn svg{width:18px;height:18px}
@@ -431,6 +442,31 @@ section{position:relative;padding:76px 0}
     </div>
   </section>
 
+  <!-- Mesa de regalos -->
+  <section class="gift center">
+    <div class="pad rv">
+      <p class="eyebrow p">Mesa de regalos</p>
+      <h2 class="title">Un detalle para nosotras</h2>
+      <p class="msg">Tu compañía en esta noche tan especial es el mejor regalo. Pero si deseas tener un detalle con nosotras, puedes hacernos un obsequio en efectivo.</p>
+      <svg class="env-ico" viewBox="0 0 150 104" fill="none" aria-hidden="true">
+        <rect x="3" y="3" width="144" height="98" rx="5" fill="#fff" stroke="#e08fa3" stroke-width="1.5"/>
+        <path d="M3 8l72 52 72-52" stroke="#e08fa3" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M3 98l52-42M147 98l-52-42" stroke="#e08fa3" stroke-width="1.2" stroke-opacity=".7"/>
+        <path d="M3 8l72 52 72-52V3H3z" fill="#fceff2" fill-opacity=".9"/>
+        <path d="M75 52c-6-5-10-8-10-12a5.2 5.2 0 0 1 10-2 5.2 5.2 0 0 1 10 2c0 4-4 7-10 12z" fill="#e08fa3" transform="translate(0 6) scale(1)"/>
+      </svg>
+      <h3 class="rain">¡Lluvia de sobres!</h3>
+      <p class="buz">Habrá un buzón en la recepción</p>
+      <div class="bank">
+        <p class="lbl">Transferencia</p>
+        <p class="who">Valeria Quetzali<br>Cruz Barrios</p>
+        <p class="num" id="cardnum">4152 3145 6124 6979</p>
+        <p class="bnk">Bancomer</p>
+        <button class="btn ghost" id="copyBtn" type="button">Copiar número</button>
+      </div>
+    </div>
+  </section>
+
   <!-- Confirmar asistencia -->
   <section class="rsvp center">
     <div class="pad rv">
@@ -521,6 +557,19 @@ section{position:relative;padding:76px 0}
     },{threshold:[0,.15,.7],rootMargin:'0px 0px -8% 0px'});
     all.forEach(function(el){io.observe(el);});
   }
+
+  // Copiar número de tarjeta
+  var cb=document.getElementById('copyBtn');
+  if(cb){cb.addEventListener('click',function(){
+    var n='4152314561246979';
+    function ok(){cb.textContent='¡Copiado!';setTimeout(function(){cb.textContent='Copiar número';},2200);}
+    function fb(){
+      try{var t=document.createElement('textarea');t.value=n;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();var r=document.execCommand('copy');document.body.removeChild(t);if(r){ok();return;}}catch(e){}
+      var el=document.getElementById('cardnum');var rg=document.createRange();rg.selectNodeContents(el);var s=window.getSelection();s.removeAllRanges();s.addRange(rg);
+      cb.textContent='Mantén presionado para copiar';setTimeout(function(){cb.textContent='Copiar número';},3000);
+    }
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(n).then(ok,fb);}else{fb();}}catch(e){fb();}
+  });}
 
   // Cuenta regresiva: 29 dic 2026, 2:00 pm hora de México (UTC-6)
   var target=Date.UTC(2026,11,29,20,0,0);
